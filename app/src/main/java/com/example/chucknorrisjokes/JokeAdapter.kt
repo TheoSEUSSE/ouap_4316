@@ -7,7 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 
 
 class JokeAdapter : RecyclerView.Adapter<JokeAdapter.JokeViewHolder>() {
-    private var listJoke: List<Joke> = List(1){Joke(emptyList(),"","","","","","LoL")}
+    var listJoke: List<Joke> = emptyList()
+
+    set(list : List<Joke>) {
+        field = list
+        notifyDataSetChanged()}
 
     class JokeViewHolder(val tV : TextView) : RecyclerView.ViewHolder(tV)
 

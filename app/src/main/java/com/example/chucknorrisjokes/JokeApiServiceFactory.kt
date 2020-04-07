@@ -1,6 +1,7 @@
 package com.example.chucknorrisjokes
 
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.UnstableDefault
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType
 import retrofit2.Retrofit
@@ -9,13 +10,14 @@ import retrofit2.create
 
 object JokeApiServiceFactory {
 
+    @UnstableDefault
     fun factory() : JokeApiService {
         val builder = Retrofit.Builder()
-            .baseUrl("https://api.chucknorris.io/jokes/random")
+            .baseUrl("https://api.chucknorris.io/jokes/random/")
             .addConverterFactory(Json.asConverterFactory(MediaType.get("application/json")))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
-        return builder.create<JokeApiService>()
+        return builder.create()
 
     }
 }

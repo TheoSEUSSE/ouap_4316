@@ -4,14 +4,17 @@ import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import io.reactivex.Scheduler
 import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
+import kotlinx.serialization.UnstableDefault
 
 class MainActivity : AppCompatActivity() {
 
@@ -21,29 +24,32 @@ class MainActivity : AppCompatActivity() {
     private val composite = CompositeDisposable()
 
 
-    @SuppressLint("CheckResult")
+    @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("JokeList", JokeList.jokes.toString())
-
+        val viewAdapter = JokeAdapter()
         viewManager = LinearLayoutManager(this)
 
         recyclerView = findViewById<RecyclerView>(R.id.recyclerView).apply {
             layoutManager = viewManager
-            adapter = JokeAdapter()
+            adapter = viewAdapter
         }
-        val jokeService : Single<Joke> = JokeApiServiceFactory.factory().giveMeAJoke()
 
-        jokeService.subscribeOn(Schedulers.io())
+        val button = findViewById<Button>(R.id.joke_button)
+            button?.setOnClickListener() {
+                val jokeService : Single<Joke> = JokeApiServiceFactory.factory().giveMeAJoke()
 
-        val sub = jokeService.subscribeBy(
+                val sub = jokeService.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeBy(
                     onError = {Log.d("ERROR", it.toString())},
-                    onSuccess = {Log.d("SUCCESS", it.toString())}
-            )
+                    onSuccess = {viewAdapter.listJoke = viewAdapter.listJoke.plus(it)}
+                )
 
-        composite.add(sub)
-        composite.clear()
+                composite.add(sub)
+            }
 
+
+        //composite.clear()
+        Log.d("TEST", viewAdapter.listJoke.toString())
     }
 }
