@@ -17,6 +17,9 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.subscribeBy
 import io.reactivex.schedulers.Schedulers
 import kotlinx.serialization.UnstableDefault
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewManager : RecyclerView.LayoutManager
 
     private val composite = CompositeDisposable()
-
+    private lateinit var vA : JokeAdapter
 
     @UnstableDefault
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +36,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val viewAdapter = JokeAdapter()
+        vA = viewAdapter
 
         viewManager = LinearLayoutManager(this)
 
@@ -42,16 +46,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         val progressBar = findViewById<ProgressBar>(R.id.progress_bar)
-        val button = findViewById<Button>(R.id.joke_button)
 
-        button?.setOnClickListener() {
-            val jokeService : Single<Joke> = JokeApiServiceFactory.factory().giveMeAJoke()
 
-            jokeService.doOnSubscribe{ progressBar.visibility = View.VISIBLE }
-
-            val sub = jokeService
+        fun display10jokes( viewAdapter : JokeAdapter) {
+            val sub = JokeApiServiceFactory.factory().giveMeAJoke()
                 .repeat(10)
-                .delay(5,TimeUnit.MILLISECONDS)
+                .delay(500,TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe { progressBar.visibility = View.VISIBLE }
@@ -59,10 +59,46 @@ class MainActivity : AppCompatActivity() {
                 .subscribeBy(
                     onError = {Log.d("ERROR", it.toString())},
                     onNext = {viewAdapter.listJoke = viewAdapter.listJoke.plus(it)},
-                    onComplete = {Log.d("COMPLETED", it.toString())}
-            )
+                    onComplete = {} )
             composite.add(sub)
         }
-        Log.d("TEST", viewAdapter.listJoke.toString())
+
+        display10jokes(viewAdapter)
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int ) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if ( (viewManager as LinearLayoutManager).findLastVisibleItemPosition() == viewAdapter.itemCount - 1) {
+                    display10jokes(viewAdapter)
+                }
+            }
+        } )
+
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("size", vA.listJoke.size)
+        var iterator = 0
+        vA.listJoke.forEach {
+            outState.putString("joke$iterator", Json(JsonConfiguration.Stable).stringify(Joke.serializer(), it))
+            iterator++
+        }
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        val size = savedInstanceState.getInt("size")
+        var stock : List<Joke> = emptyList()
+        for (i in 0 until size-1) {
+            try {
+                stock = stock.plus(Json(JsonConfiguration.Stable).parse(Joke.serializer(), savedInstanceState.getString("joke$i")!!))
+            }
+            catch (e : Exception) {
+                Log.d("error", e.toString())
+            }
+        }
+        vA.listJoke = stock
     }
 }
+
+

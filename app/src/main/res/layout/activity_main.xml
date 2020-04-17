@@ -12,7 +12,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="560dp" />
+        android:layout_height="740dp" />
 
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -21,12 +21,5 @@
         android:layout_gravity="center"
         android:visibility="invisible" />
 
-    <Button
-        android:id="@+id/joke_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_gravity="center"
-        android:text="@string/new_joke" />
 
 </LinearLayout>
