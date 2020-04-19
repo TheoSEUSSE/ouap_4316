@@ -1,6 +1,7 @@
 package com.example.chucknorrisjokes
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -101,6 +102,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         vA.listJoke = stock
+    }
+
+    fun shared (view : View) {
+        val share = Intent.createChooser(Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, vA.listJoke[recyclerView.findContainingViewHolder(view)!!.adapterPosition].toString())
+        }, "Share")
+        startActivity(share)
     }
 }
 

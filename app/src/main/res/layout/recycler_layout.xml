@@ -17,7 +17,7 @@
             android:padding="10dp"
             android:text="@string/this_is_a_joke"
             android:textAlignment="textStart"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:layout_marginBottom="5dp" />
 
         <ImageView
@@ -29,8 +29,7 @@
             android:layout_marginStart="10dp"
             app:layout_constraintStart_toEndOf="@id/my_text_view"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:onClick="shared"/>
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageView
             android:id="@+id/share"
@@ -43,7 +42,8 @@
             app:layout_constraintStart_toEndOf="@+id/like"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_goneMarginEnd="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:onClick="shared"/>
 
     </com.example.chucknorrisjokes.JokeView>
 
