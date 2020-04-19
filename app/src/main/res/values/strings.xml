@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Chuck Norris Jokes</string>
     <string name="new_joke">New Joke</string>
+    <string name="this_is_a_joke">This is a Joke</string>
+    <string name="share_button">sharebutton</string>
+    <string name="like_button">likebutton</string>
 </resources>

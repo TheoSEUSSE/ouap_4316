@@ -73,6 +73,9 @@ class MainActivity : AppCompatActivity() {
             }
         } )
 
+        val callback = JokeTouchHelper({a -> viewAdapter.removeJoke(a)}, {a, b-> viewAdapter.moveAJoke(a, b)})
+        callback.attachToRecyclerView(recyclerView)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
